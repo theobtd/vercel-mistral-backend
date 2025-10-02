@@ -1,24 +1,26 @@
 const { parse } = require('pdf-parse');
 const mammoth = require('mammoth');
-const FormData = require('form-data');
-const fetch = require('node-fetch');
 const formidable = require('formidable');
+const fetch = require('node-fetch');
 
 module.exports = async (req, res) => {
   // Set CORS headers for all responses
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Request-Method', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
+  res.setHeader('Access-Control-Allow-Headers', '*');
 
   // Handle preflight (OPTIONS) request
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   // Only allow POST
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
-    return res.status(405).end('Method Not Allowed');
+    res.status(405).end('Method Not Allowed');
+    return;
   }
 
   try {
@@ -30,7 +32,8 @@ module.exports = async (req, res) => {
     form.parse(req, async (err, fields, files) => {
       if (err) {
         console.error('Error parsing files:', err);
-        return res.status(500).json({ error: 'Failed to parse files' });
+        res.status(500).json({ error: 'Failed to parse files' });
+        return;
       }
 
       const { prompt } = fields;
@@ -71,10 +74,10 @@ module.exports = async (req, res) => {
 
       const data = await response.json();
       const reply = data.choices[0].message.content;
-      return res.status(200).json({ reply });
+      res.status(200).json({ reply });
     });
   } catch (error) {
     console.error('Error:', error);
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
