@@ -1,17 +1,14 @@
 const { MistralClient } = require('@mistralai/mistralai');
 
 module.exports = async (req, res) => {
-  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Handle preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Only allow POST
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).end('Method Not Allowed');
@@ -24,6 +21,8 @@ module.exports = async (req, res) => {
 
     const client = new MistralClient(process.env.MISTRAL_API_KEY);
     const { message } = req.body;
+
+    console.log('Received message:', message);  // Debugging log
 
     if (!message) {
       throw new Error('Message is required');
