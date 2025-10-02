@@ -1,0 +1,8 @@
+{
+  "name": "vercel-mistral-backend",
+  "version": "1.0.0",
+  "main": "api/chat.js",
+  "dependencies": {
+    "@mistralai/mistralai": "^1.0.0"
+  }
+}
